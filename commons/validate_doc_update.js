@@ -21,6 +21,33 @@ function(newDoc, oldDoc, userCtx, secObj) {
         return userCtx.roles.indexOf(role) >= 0;
     }
 
+    function is_locked_by_user() {
+        if (!oldDoc) return true;
+
+        var old_locked = typeof oldDoc['locked'] !== 'undefined' ? oldDoc.locked === true : false;
+        var old_locked_by = typeof oldDoc['locked_by'] !== 'undefined' ? oldDoc.locked_by : '';
+        var new_locked = newDoc && typeof newDoc['locked'] !== 'undefined' ? newDoc.locked === true : false;
+        var new_locked_by = newDoc && typeof newDoc['locked_by'] !== 'undefined' ? newDoc.locked_by : '';
+        var current_usr = userCtx.name;
+        
+        if (!old_locked) return true;
+        if (new_locked && new_locked_by === old_locked_by) return true;
+        if (new_locked && old_locked_by === '') return true;
+        if (new_locked && new_locked_by !== old_locked_by) return false;
+        if (!new_locked && new_locked_by === old_locked_by) {
+            newDoc.locked_by = '';
+            return true;
+        }
+        if (!new_locked && new_locked_by !== old_locked_by) return false;
+
+        return false;
+    }
+
+    if (!is_locked_by_user()) {
+        // throw({forbidden: 'Destination document is locked.'});
+        throw({unauthorized: 'Destination document is locked.'});
+    }
+
 	var del_collection = [
 		"updown_config",
 		"monit_config"

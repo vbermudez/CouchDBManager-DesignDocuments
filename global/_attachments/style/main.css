@@ -1,0 +1,25 @@
+/* add styles here */
+
+body {
+  font:1em Helvetica, sans-serif;
+}
+
+.rel_1 {
+    color: crimson;
+}
+
+.rel_2 {
+    color: blue;
+}
+
+.rel_3 {
+    color: deeppink;
+}
+
+.rel_4 {
+    color: orange;
+}
+
+.rel_5 {
+    color: greenyellow;
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{title}}</title>
+        
+        <link rel="stylesheet" href="{{contextRoot}}/vendor/bootstrap/css/bootstrap.min.css" type="text/css"/>
+        <link rel="stylesheet" href="{{contextRoot}}/vendor/bootstrap/css/bootstrap-theme.min.css" type="text/css"/>
+    </head>
+    <body>
+        <div class="container">
+            <h1>{{title}}: <span id="collection"></span></h1>
+            <form id="form"></form>
+        </div>
+        
+        <script src="/_utils/script/json2.js"></script>
+        <script src="/_utils/script/jquery.js"></script>
+        <script src="/_utils/script/jquery.couch.js"></script>
+        <script src="/_utils/script/sha1.js"></script>
+        <script src="{{contextRoot}}/vendor/couchapp/jquery.couch.app.js"></script>
+        <script src="{{contextRoot}}/vendor/couchapp/jquery.couch.app.util.js"></script>
+        <script src="{{contextRoot}}/vendor/couchapp/jquery.mustache.js"></script>
+        <script src="{{contextRoot}}/vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script src="{{contextRoot}}/script/json-form.js"></script>
+        
+        <script>
+            var doc = JSON.parse('{{document}}');
+            
+            $('#collection').html(doc.collection);
+            to_form(doc).appendTo('#form');
+        </script>
+    </body>
+</html>

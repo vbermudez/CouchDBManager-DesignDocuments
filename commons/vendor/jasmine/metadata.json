@@ -1,0 +1,5 @@
+{
+	"name": "jasmine",
+	"description": "official jasmine vendor",
+	"fetch_uri": "git://github.com/jasmine/jasmine.git"
+}

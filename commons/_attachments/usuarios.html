@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>Commons CouchApp :: Usuarios</title>
+
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap-theme.min.css" type="text/css"/>
+  </head>
+  <body class="container">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#home">Aunia</a>
+        </div> <!-- /.navbar-header -->
+
+        <div class="collapse navbar-collapse" id="main-menu">
+          <ul class="nav navbar-nav">
+            <li class="active">
+              <a href="#home" data-toggle="tab">Inicio</a>
+            </li>
+            <li>
+              <a href="#users" data-toggle="tab">Usuarios</a>
+            </li>
+            <li>
+              <a href="#roles" data-toggle="tab">Roles</a>
+            </li>
+            <li>
+              <a href="#ldap" data-toggle="tab">LDAP</a>
+            </li>
+          </ul>
+
+          <p class="navbar-text navbar-right">
+            Conectad@ como 
+            <a href="#" class="navbar-link"><span id="username">Desconocido</span></a>
+            &nbsp;
+          </p>
+        </div> <!-- /.navbar-collapse -->
+      </div> <!-- /.container-fluid -->
+    </nav>
+
+    <br><br><br>
+
+    <div class="hide" id="database-list">
+      <form class="form-inline well">
+        <div class="form-group">
+          <label for="database">Base de datos:</label>
+          <select class="form-control" id="database">
+            <option value="--" selected>Seleccione una opci&oacute;n</option>
+          </select>
+        </div>
+      </form>
+      <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th width="10%">Admin?</th>
+              <th width="10%">Member?</th>
+              <th width="80%">Nombre</th>
+            </tr>
+          </thead>
+          <tbody id="asign-members"></tbody>
+        </table>
+    </div> <!-- /.well -->
+
+    <div class="tab-content">
+      <div id="home" class="tab-pane active">
+        <form>
+          <input type="hidden" id="_id">
+          <input type="hidden" id="_rev">
+          <div class="form-group">
+            <label for="user-name">Nombre:</label>
+            <input type="text" id="user-name" class="form-control">
+          </div> <!-- /.form-group -->
+          <div class="form-group">
+            <label for="user-password">Clave:</label>
+            <input type="password" id="user-password" class="form-control">
+          </div> <!-- /.form-group -->
+          <div class="form-inline">
+            <div class="form-group">
+              <label for="user-roles-input">Roles:</label>
+              <div class="input-group">
+                <input type="text" id="user-roles-input" class="form-control">
+                <span class="input-group-btn">
+                  <button id="user-add-role" class="btn btn-default" type="button">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                  </button>
+                </span> <!-- /.input-group-btn -->
+              </div> <!-- /.input-group -->
+            </div> <!-- /.form-group -->
+            <div class="form-group">
+              <label for="user-roles"></label>
+              <div class="input-group">
+                <select class="form-control" id="user-roles" multiple style="width: 200px; height: 50px;"></select>
+                <span class="input-group-btn">
+                  <button id="user-delete-role" class="btn btn-default" type="button">
+                    <span class="glyphicon glyphicon-remove"></span>
+                  </button>
+                  <button id="user-edit-role" class="btn btn-default" type="button">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                  </button>
+                </span> <!-- /.input-group-btn -->
+              </div> <!-- /.input-group -->
+            </div>  <!-- /.form-group -->
+          </div>
+          <button id="save-user" class="btn btn-primary">Guardar</button>
+          <button id="reset-user" class="btn btn-default">Reset</button>
+        </form>
+
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th width="10%">...</th>
+              <th width="30%">Nombre</th>
+              <th width="60%">Roles</th>
+            </tr>
+          </thead>
+          <tbody id="user-list"></tbody>
+        </table>
+      </div> <!-- /#home -->
+
+      <div id="users" class="tab-pane">
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon">Usuario</span>
+            <input type="text" id="db-user" class="form-control">
+            <span class="input-group-btn">
+              <button id="db-user-append" class="btn btn-default" type="button">
+                <span class="glyphicon glyphicon-plus"></span>
+              </button>
+            </span>
+          </div> <!-- /.input-group -->
+        </div> <!-- /.form-group -->
+        <button class="btn btn-primary" id="save-db-users">Guardar</button>
+        <button class="btn btn-default" id="reset-db-users">Reset</button>
+      </div> <!-- /#users -->
+
+      <div id="roles" class="tab-pane">
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon">Rol</span>
+            <input type="text" id="db-role" class="form-control">
+            <span class="input-group-btn">
+              <button id="db-role-append" class="btn btn-default" type="button">
+                <span class="glyphicon glyphicon-plus"></span>
+              </button>
+            </span>
+          </div> <!-- /.input-group -->
+        </div> <!-- /.form-group -->
+        <button class="btn btn-primary" id="save-db-roles">Guardar</button>
+        <button class="btn btn-default" id="reset-db-roles">Reset</button>
+      </div> <!-- /#roles -->
+
+      <div id="ldap" class="tab-pane">
+        <div class="well">
+          <div class="form-group">
+            <div class="input-group">
+              <span class="input-group-addon">Atrbs</span>
+              <input type="text" id="ldap-attrs" class="form-control" value="uid,cn">
+            </div> <!-- /.input-group -->
+          </div> <!-- /.form-group -->
+
+          <div class="form-group">
+            <div class="input-group">
+              <span class="input-group-addon">Filtro</span>
+              <input type="text" id="ldap-filter" class="form-control" value="(&(objectClass=person)(uid=9685*))">
+              <span class="input-group-btn">
+                <button id="ldap-search" class="btn btn-default" type="button">
+                  <span class="glyphicon glyphicon-search"></span>
+                </button>
+                <button id="ldap-reset" class="btn btn-default" type="button">
+                  <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+              </span> <!-- /.input-group-btn -->
+            </div> <!-- /.input-group -->
+          </div> <!-- /.form-group -->
+          <button id="ldap-check-all" class="btn btn-default"><span class="glyphicon glyphicon-check"></span></button>
+          <button id="ldap-uncheck-all" class="btn btn-default"><span class="glyphicon glyphicon-unchecked"></span></button>
+          <button id="ldap-import" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+        </div> <!-- /.well -->
+
+        <div id="fails" class="hide"></div>
+        <div id="ldap-result" class="list-group"></div>
+    </div> <!-- /#ldap -->
+
+    <script src="/_utils/script/json2.js"></script>
+    <script src="vendor/jquery/jquery-1.12.4.min.js"></script>
+    <script src="/_utils/script/jquery.couch.js"></script>
+    <script src="/_utils/script/sha1.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <script>
+      $(function() {
+        $('#main-menu > ul > li > a').on('click', function(e) { 
+          if ( !$('#database-list').hasClass('hide') ) {
+            $('#database-list').addClass('hide');
+          }
+
+          var active = $(this).attr('href');
+          
+          $('#database').off('change');
+          $('#database').val('--');
+          $('#database').change();
+          $('#asign-members').empty();
+
+          if ( active == '#users' || active == '#roles' ) {
+            $('#database-list').removeClass('hide');
+            
+            if (active == '#users') {
+              $('#database').on('change', load_table.bind({ which: 'names'}));
+            } else {
+              $('#database').on('change', load_table.bind({ which: 'roles'}));
+            }
+          }
+        });
+
+        $('#save-user').on('click', save_user);
+        $('#user-add-role').on('click', add_user_role);
+        $('#user-delete-role').on('click', del_user_role);
+        $('#user-edit-role').on('click', edit_user_role);
+        $('#reset-user').on('click', reset_user_form);
+        $('#ldap-search').on('click', ldap_search);
+        $('#ldap-reset').on('click', ldap_reset);
+        $('#ldap-check-all').on('click', ldap_check_all);
+        $('#ldap-uncheck-all').on('click', ldap_uncheck_all);
+        $('#ldap-import').on('click', ldap_import);
+        $('#save-db-users').on('click', save_db_users);
+        $('#save-db-roles').on('click', save_db_roles);
+        $('#reset-db-users').on('click', reset_db_user_roles);
+        $('#reset-db-roles').on('click', reset_db_user_roles);
+        $('#db-user-append').on('click', append_db_user);
+        $('#db-role-append').on('click', append_db_role);
+        load_users();
+
+        $.when($.couch.allDbs(), $.couch.session(), $.couch.db('_users').allDocs({})).then(function(dbs, sess) {
+          $('#username').text( sess[0].userCtx.name );
+          $('#database').empty();
+          $('<option value="--" selected>Seleccione una opci&oacute;n</option>').appendTo('#database');
+
+          for (var i = 0, len = dbs[0].length; i < len; i++) {
+            var db = dbs[0][i];
+
+            if (db.indexOf('_') != 0) {
+              $('<option value="' + db + '">' + db + '</option>').appendTo('#database');
+            }
+          }
+        });
+      });
+
+      function append_db_user(e) {
+        e.preventDefault();
+
+        var name = $('#db-user').val();
+        var tr = $('<tr data-item="' + name + '"></tr>');
+        
+        $('<td align="center"><input type="checkbox" class="is_admin"></td>').appendTo(tr);
+        $('<td align="center"><input type="checkbox" class="is_member"></td>').appendTo(tr);
+        $('<td>' + name + '</td>').appendTo(tr);
+        tr.appendTo('#asign-members');
+        $('#db-user').val('');
+        $('#db-user')[0].focus();
+      }
+
+      function append_db_role(e) {
+        e.preventDefault();
+
+        var name = $('#db-role').val();
+        var tr = $('<tr data-item="' + name + '"></tr>');
+        
+        $('<td align="center"><input type="checkbox" class="is_admin"></td>').appendTo(tr);
+        $('<td align="center"><input type="checkbox" class="is_member"></td>').appendTo(tr);
+        $('<td>' + name + '</td>').appendTo(tr);
+        tr.appendTo('#asign-members');
+        $('#db-role').val('');
+        $('#db-role')[0].focus();
+      }
+
+      function save_db_users(e) {
+        e.preventDefault();
+
+        var sec = JSON.parse( localStorage.getItem( '_security' ) );
+        var admins = [];
+        var members = [];
+
+        $('#asign-members tr').each(function(idx, tag) {
+          var row = $(tag);
+          var name = row.data('item');
+          var is_admin = row.find('input.is_admin').prop('checked');
+          var is_member = row.find('input.is_member').prop('checked');
+
+          if (is_admin) {
+            admins.push(name);
+          }
+
+          if (is_member) {
+            members.push(name);
+          }
+        });
+
+        if (admins.indexOf('root') == -1) {
+          admins.push('root');
+        }
+
+        var security = {
+          admins: {
+            names: admins,
+            roles: sec.admins.roles
+          },
+          members: {
+            names: members,
+            roles: sec.members.roles
+          }
+        };
+
+        $.ajax({
+          url: '/' + $('#database').val() + '/_security',
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify(security),
+          type: 'PUT'
+        }).then(function(result) {
+          if (result && result.ok) {
+            alert('Se han guardado los cambios');
+          } else {
+            alert( JSON.stringify(result) );
+            console.log('update_security_error', result);
+          }
+
+          $('#database').change();
+          $('#db-user').val('');
+          $('#db-role').val('');
+        });
+      }
+
+      function save_db_roles(e) {
+        e.preventDefault();
+
+        var sec = JSON.parse( localStorage.getItem( '_security' ) );
+        var admins = [];
+        var members = [];
+
+        $('#asign-members tr').each(function(idx, tag) {
+          var row = $(tag);
+          var name = row.data('item');
+          var is_admin = row.find('input.is_admin').prop('checked');
+          var is_member = row.find('input.is_member').prop('checked');
+
+          if (is_admin) {
+            admins.push(name);
+          }
+
+          if (is_member) {
+            members.push(name);
+          }
+        });
+
+        var security = {
+          admins: {
+            names: sec.admins.names,
+            roles: admins
+          },
+          members: {
+            names: sec.members.names,
+            roles: members
+          }
+        };
+
+        $.ajax({
+          url: '/' + $('#database').val() + '/_security',
+          dataType: 'json',
+          contentType: 'application/json',
+          data: JSON.stringify(security),
+          type: 'PUT'
+        }).then(function(result) {
+          if (result && result.ok) {
+            alert('Se han guardado los cambios');
+          } else {
+            alert( JSON.stringify(result) );
+            console.log('update_security_error', result);
+          }
+
+          $('#database').change();
+          $('#db-user').val('');
+          $('#db-role').val('');
+        });
+      }
+
+      function reset_db_user_roles(e) {
+        e.preventDefault();
+
+        $('#database').val('--');
+        $('#database').change();
+        $('#db-user').val('');
+        $('#db-role').val('');
+        load_table();
+      }
+
+      function load_table() {
+        $('#asign-members').empty();
+
+        var db_name = $('#database').val();
+        var which = this.which;
+
+        if (db_name == '--') {
+          return;
+        }
+
+       $.getJSON('/' + db_name + '/_security').then(function(result) {
+          var rows = [];
+
+          localStorage.setItem( '_security', JSON.stringify(result) );
+
+          if (typeof result.admins !== 'undefined') {
+            rows = rows.concat( result.admins[which] );
+          }
+
+          if (typeof result.members !== 'undefined') {
+            rows = rows.concat( result.members[which] );
+          }
+
+          if (rows && rows.length) {
+            rows.sort().forEach(function(row) {
+              var tr = $('<tr data-item="' + row + '"></tr>');
+
+              $('<td align="center"><input type="checkbox" class="is_admin"' + 
+                (result.admins[which].indexOf(row) != -1 ? 'checked' : '') + '></td>').appendTo(tr);
+              $('<td align="center"><input type="checkbox" class="is_member"' + 
+                (result.members[which].indexOf(row) != -1 ? 'checked' : '') + '></td>').appendTo(tr);
+              $('<td>' + row + '</td>').appendTo(tr);
+              tr.appendTo('#asign-members');
+            });
+          }
+        });
+      }
+
+      function ldap_search(e) {
+        var attrs = $('#ldap-attrs').val();
+        var filter = encodeURIComponent( $('#ldap-filter').val() );
+
+        $('#ldap-result').empty();
+        $('.list-group-item').off('click', select_list_item);
+
+        $.get('http://fnpro.caf.net/WebService/ldap/search?attrs=' + attrs + '&filter=' + filter).then(function(result) {
+          for (var i = 0, len = result.length; i < len; i++) {
+            var item = result[i];
+
+            $('<a class="list-group-item" id="' + item.id + 
+              '" data-item=\'' + JSON.stringify(item) + 
+              '\' href="#">' + item.longName  + '</a>').appendTo('#ldap-result');
+          }
+
+          $('.list-group-item').on('click', select_list_item);
+        });
+      }
+
+      function ldap_reset(e) {
+        e.preventDefault();
+
+        $('#ldap-result').empty();
+        $('#ldap-attrs').val('uid,cn');
+        $('#ldap-filter').val('(&(objectClass=person)(uid=9685*))');
+        $('#fails').text('').addClass('hide');
+      }
+
+      function ldap_check_all(e) {
+        e.preventDefault();
+
+        $('.list-group-item').addClass('active');
+      }
+
+      function ldap_uncheck_all(e) {
+        e.preventDefault();
+
+        $('.list-group-item').removeClass('active');
+      }
+
+      function ldap_import(e) {
+        e.preventDefault();
+
+        var couchdb_users = [];
+
+        $('.list-group-item.active').each(function(idx, item) {
+          var user = $(item).data('item');
+
+          couchdb_users.push({
+            _id: 'org.couchdb.user:' + user.id,
+            name: user.id,
+            type: 'user',
+            roles: ['users'],
+            password: user.id
+          });
+        });
+
+        $.couch.userDb(function(db) {
+          db.bulkSave({ docs: couchdb_users }).then(function(result) {
+            if (result && result.length) {
+              var fails = [];
+
+              for (var i = 0, len = result.length; i < len; i++) {
+                var doc = result[i];
+
+                if (!doc.ok) {
+                  fails.push(doc);
+                }
+              }
+
+              if (fails.length) {
+                alert('Se han producido errores. Compruebe la respuesta del servicio.');
+                $('#fails').text( JSON.stringify(fails) ).removeClass('hide');
+              } else {
+                alert('Se han importado todos los usuarios');
+              }
+
+              load_users();
+            }
+          });
+        });
+      }
+
+      function select_list_item(e) {
+        e.preventDefault();
+
+        if ($(this).hasClass('active')) {
+          $(this).removeClass('active');
+        } else {
+          $(this).addClass('active');
+        }
+
+        return false;
+      }
+
+      function load_users() {
+        $('#user-list').empty();
+
+        $.couch.userDb(function(db) {
+          db.allDocs({ include_docs: true }).then(function(users) {
+            for (var i = 0, len = users.rows.length; i < len; i++) {
+              var usr = users.rows[i].doc;
+              
+              if (usr._id.indexOf('org.couchdb.user') == 0) {
+                var row = $('<tr id="' + usr._id + '" data-item=\'' + JSON.stringify(usr) + '\'></tr>');
+                var td_actions = $('<td></td>');
+                
+                $('<button class="del-usr btn btn-default"><span class="glyphicon glyphicon-remove"></span></button>&nbsp;').appendTo(td_actions);
+                $('<button class="edit-usr btn btn-default"><span class="glyphicon glyphicon-pencil"></span></button>').appendTo(td_actions);
+                td_actions.appendTo(row);
+                $('<td>' + usr.name + '</td>').appendTo(row);
+                $('<td>' + usr.roles + '</td>').appendTo(row);
+                row.appendTo('#user-list');
+              }
+            }
+
+            $('button.del-usr').on('click', delete_user);
+            $('button.edit-usr').on('click', edit_user);
+          });
+        });
+      }
+
+      function add_user_role() {
+        var role = $('#user-roles-input').val();
+        var exists = $('#user-roles option[value="' + role + '"]').size() > 0;
+
+        if (role && !exists) {
+          $('<option value="' + role + '">' + role + '</option>').appendTo('#user-roles');
+        }
+
+        $('#user-roles-input').val('');
+      }
+
+      function del_user_role(e) {
+        e.preventDefault();
+
+        var options = $('#user-roles option:selected');
+
+        if (options.size() > 0) {
+          options.remove();
+        }
+      }
+
+      function edit_user_role(e) {
+        e.preventDefault();
+
+        var options = $('#user-roles option:selected');
+
+        if (options.size() > 0) {
+          $('#user-roles-input').val( options[0].value );
+          $( options[0] ).remove();
+        }
+      }
+
+      function get_user() {
+        var _id = $('#_id').val();
+        var _rev = $('#_rev').val();
+        var name = $('#user-name').val();
+        var password = $('#user-password').val();
+        var roles = $('#user-roles option');
+        var user = {};
+
+        if (_id) {
+          user = $('tr[id="' + _id + '"]').data('item');
+        } else {
+          user = {
+            _id: 'org.couchdb.user:' + name,
+            name: name,
+            type: 'user',
+            roles: []
+          };
+        }
+
+        if (password && !_id) {
+          user['password'] = password;
+        }
+
+        if (_id) {
+          user.roles = [];
+        }
+        
+        roles.each(function(idx, itm) {
+          user.roles.push( $(itm).val() );
+        });
+
+        console.log('get_user', user);
+
+        return user;
+      }
+
+      function set_user(user) {
+        reset_user_form();
+        $('#_id').val(user._id);
+        $('#_rev').val(user._rev);
+        $('#user-name').val(user.name);
+
+        for (var i = 0, len = user.roles.length; i < len; i++) {
+          $('<option value="' + user.roles[i] + '">' + user.roles[i] + '</option>').appendTo('#user-roles');
+        }
+      }
+
+      function reset_user_form(e) {
+        if (e) {
+          e.preventDefault();
+        }
+
+        $('#_id').val('');
+        $('#_rev').val('');
+        $('#user-name').val('');
+        $('#user-password').val('');
+        $('#user-roles-input').val('');
+        $('#user-roles').empty();
+      }
+
+      function save_user(e) {
+        e.preventDefault();
+
+        $.couch.userDb(function(db) {
+          var user = get_user();
+
+          db.saveDoc(user).then(function(result) {
+            load_users();
+
+            if (result.ok) {
+              alert('Se ha guardado el usuario ' + result.id);
+            } else {
+              alert('Error: ' + result.error + '\n' + result.reason);
+            }
+            
+            reset_user_form();
+          });
+        });
+      }
+
+      function delete_user(e) {
+        e.preventDefault();
+        
+        var user = $(this).closest('tr').data('item');
+        
+        if (!confirm('Desea borrar el usuario [' + user.name + ']?')) {
+          return false;
+        }
+
+        $.couch.userDb(function(db) {
+          db.removeDoc(user).then(function(result) {
+            load_users();
+
+            if (result.ok) {
+              alert('Se ha borrado el usuario ' + result.id);
+            } else {
+              alert('Error: ' + result.error + '\n' + result.reason);
+            }
+          });
+        });
+      }
+
+      function edit_user(e) {
+        e.preventDefault();
+        
+        var user = $(this).closest('tr').data('item');
+
+        reset_user_form();
+        set_user(user);
+      }
+    </script>
+  </body>
+</html>

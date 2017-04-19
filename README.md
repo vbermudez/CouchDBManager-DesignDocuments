@@ -1,0 +1,2 @@
+# CouchDBManager Design Documents
+> 

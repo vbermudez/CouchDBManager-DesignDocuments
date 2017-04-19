@@ -1,0 +1,5 @@
+{
+	"name": "bootstrap",
+	"description": "official bootstrap vendor",
+	"fetch_uri": "git://github.com/twbs/bootstrap.git"
+}

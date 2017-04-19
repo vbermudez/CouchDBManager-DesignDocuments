@@ -1,0 +1,81 @@
+{
+    "_id": "commons-configuration",
+    "collection": "commons-config",
+    "name": "commons-configuration",
+    "servers": {
+        "remote": "http://172.24.2.69:5984",
+        "local" : "http://localhost:5984",
+        "central": "http://172.24.2.69:5984"
+    },
+    "documents": {
+        "actions": {
+            "views": [
+                "action",
+                "connection"
+            ]
+        },
+		"global": {
+			"views": [
+                "actions_types",
+                "aunia_config",
+				"conf_types",
+                "sandbox_paths",
+                "updown_types"
+			]
+		
+		},
+        "configuration": {
+            "views": [
+                "ba",
+                "bus",
+                "car",
+                "device",
+                "distributed_container",
+                "physical_car",
+                "physical_device",
+                "physical_ut",
+                "project",
+                "rel_device_container",
+                "system",
+				"test",
+                "ut",
+                "variable",
+                "rel_bus_device"
+            ]
+        },
+        "launcher3": {
+            "views": [
+                "project_tool_version",
+                "tool",
+                "tool_version",
+                "tool_version_pc_path"
+            ]
+        },
+        "monit": {
+            "views": [
+                "monit_config"
+            ]
+        },
+        "trace": {
+            "views": [
+                "project_lc_info",
+                "sw_item",
+                "sw_item_hist",
+                "ut_daily_sw_status"
+            ]
+        },
+        "updown": {
+            "views": [
+                "updown_config"
+            ]
+        },
+        "users": {
+            "views": [
+                "organization",
+                "role",
+                "user",
+                "user_preferences"
+            ]
+        }
+    }
+}

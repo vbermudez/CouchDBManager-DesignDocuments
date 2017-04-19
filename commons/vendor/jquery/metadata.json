@@ -1,0 +1,5 @@
+{
+	"name": "jquery",
+	"description": "official jquery vendor",
+	"fetch_uri": "git://github.com/jquery/jquery.git"
+}

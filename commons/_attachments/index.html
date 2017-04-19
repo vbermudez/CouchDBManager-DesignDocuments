@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Commons CouchApp</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+  </head>
+  <body>
+    <h1>Commons CouchApp</h1>
+
+    <h3>Funciones de listado</h3>
+    <label for="function">Funci&oacute;n:</label>
+    <select id="function">
+      <option value="relations" selected>relations</option>
+      <option value="as_table">as_table</option>
+    </select>
+    <br>
+    <label for="document">Document de dise&ntilde;o: </label>
+    <select id="document">
+      <option value="--" selected>Seleccione una opci&oacute;n</option>
+    </select>
+    <button id="go-to-document">Ir a documento</button>
+    <br>
+    <label for="view">Vista: </label>
+    <select id="view">
+      <option value="--" selected>Seleccione una opci&oacute;n</option>
+    </select>
+    <br>
+    <label for="format">Formato: </label>
+    <select id="format">
+      <option value="html" selected>html</option>
+      <option value="json">json</option>
+    </select>
+    <br>
+    <label for="simple_rels">Cargar relaciones simples: </label>
+    <select id="simple_rels">
+      <option value="0" selected>No</option>
+      <option value="1">Sí</option>
+    </select>
+    <br>
+    <label for="filter" style="vertical-align: top;">Filtro (PQL, opcional): </label>
+    <textarea id="filter" cols="60" rows="6"></textarea>
+    <br>
+    <button id="go">Ir</button>
+    &nbsp;
+    <button id="changes">Filtrar cambios</button>
+    <br>
+
+    <h3>Sincronizar Documentos de Diseño</h3>
+    <label for="source">De: </label>
+    <input type="text" id="source" style="width: 150px;" value="http://root:root@localhost:5984/aunia">
+    <label for="target">A: </label>
+    <input type="text" id="target" style="width: 150px;" value="http://root:root@172.24.2.69:5984/aunia">
+    <button id="sync">Sincronizar</button>
+    &nbsp;
+    <button id="sync-reset">Reset</button>
+    &nbsp;
+    <button id="sync-change">Cambiar</button>
+    <br>
+    <div id="sync-results"></div>
+    <br>
+
+    <h3>Gesti&oacute;n de usuarios</h3>
+    <a href="usuarios.html">Entrar</a>
+
+    <h3>Tareas activas</h3>
+    <a href="/_active_tasks" target="_blank">Ver</a>
+
+    <script src="/_utils/script/json2.js"></script>
+    <script src="/_utils/script/jquery.js"></script>
+    <script src="/_utils/script/jquery.couch.js"></script>
+    <script src="/_utils/script/sha1.js"></script>
+    <script>
+      var db_name = location.pathname.match(/^\/(\w*).*/i);
+
+      if (db_name && db_name.length) {
+        db_name = db_name[1] || 'aunia';
+      } else {
+        db_name = 'aunia';
+      }
+
+      $(function() {
+        $.couch.db(db_name).openDoc('commons-configuration').then(function(cfg) {
+          localStorage.setItem('cfg', JSON.stringify(cfg));
+          $('#document').off('change', document_on_change);
+          $('#document').empty();
+          $('<option value="--" selected>Seleccione una opci&oacute;n</option>').appendTo('#document');
+
+          for (var ddoc in cfg.documents) {
+            $('<option value="' + ddoc + '">' + ddoc + '</option>').appendTo('#document');
+          }
+
+          $('#document').on('change', document_on_change);
+        });
+
+        $('#go-to-document').on('click', go_to_document_on_click);
+        $('#go').on('click', go_on_click);
+        $('#changes').on('click', changes_on_click);
+        $('#sync').on('click', sync_on_click);
+        $('#sync-reset').on('click', function(e) {
+          e.preventDefault();
+
+          $('#sync-results').empty();
+        });
+
+        $('#sync-change').on('click', function(e) {
+          e.preventDefault();
+
+          var source = $('#source').val();
+          var target = $('#target').val();
+
+          $('#source').val(target);
+          $('#target').val(source);
+        });
+      });
+
+      function document_on_change(e) {
+        e.preventDefault();
+
+        var cfg = JSON.parse(localStorage.getItem('cfg'));
+        var ddoc = $(this).val();
+        var views = cfg.documents[ddoc].views;
+
+        $('#view').empty();
+        $('<option value="--" selected>Seleccione una opci&oacute;n</option>').appendTo('#view');
+
+        for (var i = 0, len = views.length; i < len; i++) {
+          var view = views[i];
+
+          $('<option value="' + view + '">' + view + '</option>').appendTo('#view');
+        }
+      }
+
+      function go_on_click(e) {
+        e.preventDefault();
+
+        var sel_func = $('#function').val();
+        var sel_doc = $('#document').val();
+
+        if (sel_doc == '--') {
+          alert('Debe seleccionar un documento de diseño');
+
+          return false;
+        }
+
+        var sel_view = $('#view').val();
+
+        if (sel_view == '--') {
+          alert('Debe seleccionar una vista');
+
+          return false;
+        }
+
+        var sel_format = $('#format').val();
+        var simple_rels = $('#simple_rels').val() == '1';
+        var sel_filter = $('#filter').val();
+        var loc = 'http://' + window.location.host + '/' + db_name + '/_design/commons/_list/' + 
+                  sel_func + '/' + sel_doc + '/' + sel_view + '?include_docs=true&format=' + sel_format;
+    
+        if (simple_rels) {
+          loc += '&simple_relations=true';
+        }
+
+        if (sel_filter) {
+          loc += '&where=' + encodeURIComponent(sel_filter);
+        }
+
+        // window.location.href = loc;
+        window.open(loc, '_blank');
+      }
+
+      function changes_on_click(e) {
+        e.preventDefault();
+
+        var filter = $('#filter').val();
+        var loc = 'http://' + window.location.host + '/' + db_name + '/_changes?filter=commons/by_query&feed=continuous&style=all_docs&since=0&heartbeat=10000';
+    
+        if (filter) {
+          loc += '&where=' + encodeURIComponent(filter);
+        }
+
+        window.open(loc, '_blank');
+      }
+
+      function go_to_document_on_click(e) {
+        e.preventDefault();
+
+        var sel_doc = $('#document').val();
+
+        if (sel_doc == '--') {
+          alert('Debe seleccionar un documento de diseño');
+
+          return false;
+        }
+
+        var loc = 'http://' + window.location.host + '/' + db_name + '/_design/' + sel_doc + '/index.html';
+        
+        // window.location.href = loc;
+        window.open(loc, '_blank');
+      }
+
+      function sync_on_click(e) {
+        e.preventDefault();
+
+        var cfg = JSON.parse(localStorage.getItem('cfg'));
+        var source = $('#source').val();
+        var target = $('#target').val();
+
+        if (source == target) {
+          alert('Debe especificar un origen y destino distintos');
+
+          return false;
+        }
+
+        var doc_ids = [];
+
+        for (var ddoc in cfg.documents) {
+          doc_ids.push('_design/' + ddoc);
+        }
+
+        $('#sync-results').text( 'Sincronizando ...' );
+
+        $.couch.replicate( 
+          source,
+          target,
+          {},
+          doc_ids
+        ).then(function(resp) {
+          $('#sync-results').text( JSON.stringify(resp) );
+          alert('Sincronización finalizada correctamente: ' + resp.ok );
+        });
+      }
+    </script>
+  </body>
+</html>

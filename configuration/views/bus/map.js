@@ -122,7 +122,7 @@ function(doc) {
 			_id: doc._id
 		};
 		
-		emit([doc.device.id, doc.device.version, 103], value);
+		emit([doc.bus.id, doc.bus.version, 103], value);
 		
 		if (doc.bus)
 		{		
@@ -148,7 +148,7 @@ function(doc) {
 				car : doc.car
 			}; 
 
-			emit([doc.device.id, doc.device.version, 3], value_car);			
+			emit([doc.bus.id, doc.bus.version, 3], value_car);			
 		}
 		
 	}  

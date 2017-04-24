@@ -3,6 +3,7 @@ function(doc) {
     emit([doc._id, doc.version, 0], { _id: doc._id, name: doc.name, description: doc.description });
   }
 
+		
   	if ("ut_car" === doc.collection) {
     
 		var value = {
@@ -74,6 +75,43 @@ function(doc) {
 
 			emit([doc.ut.id, doc.ut.version, 2], value_ut);
 		}
-	}	
+	}
+	
+	if ("bus_ut" === doc.collection) {
+    
+		var value = {
+			_id: doc._id
+		};
+		
+		emit([doc.ut.id, doc.ut.version, 103], value);
+		
+		if (doc.bus)
+		{		
+			var value_bus = {
+				_id: doc.bus.id,
+				rel_id: doc._id, 
+				rel_coll: doc.collection,
+				version: doc.bus.version,
+				bus : doc.bus
+			};  
+			
+			emit([doc.ut.id, doc.ut.version, 3], value_bus);
+		}
+		
+		if (doc.ut)
+		{
+			var value_ut = {
+				_id: doc.ut.id,
+				rel_id: doc._id, 
+				rel_coll: doc.collection,
+				version: doc.ut.version,
+				ut : doc.ut
+			}; 
+
+			emit([doc.ut.id, doc.ut.version, 3], value_ut);			
+		}
+		
+	}
+
 	
 }

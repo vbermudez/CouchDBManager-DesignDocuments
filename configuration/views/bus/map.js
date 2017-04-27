@@ -122,7 +122,7 @@ function(doc) {
 			_id: doc._id
 		};
 		
-		emit([doc.device.id, doc.device.version, 103], value);
+		emit([doc.bus.id, doc.bus.version, 103], value);
 		
 		if (doc.bus)
 		{		
@@ -131,8 +131,7 @@ function(doc) {
 				rel_id: doc._id, 
 				rel_coll: doc.collection,
 				version: doc.bus.version,
-				bus : doc.bus,
-				is_source : doc.is_source
+				bus : doc.bus
 			};  
 			
 			emit([doc.bus.id, doc.bus.version, 3], value_bus);
@@ -148,8 +147,43 @@ function(doc) {
 				car : doc.car
 			}; 
 
-			emit([doc.device.id, doc.device.version, 3], value_car);			
+			emit([doc.bus.id, doc.bus.version, 3], value_car);			
 		}
 		
-	}  
+	}
+	
+	if ("bus_ut" === doc.collection) {
+    
+		var value = {
+			_id: doc._id
+		};
+		
+		emit([doc.bus.id, doc.bus.version, 104], value);
+		
+		if (doc.bus)
+		{		
+			var value_bus = {
+				_id: doc.bus.id,
+				rel_id: doc._id, 
+				rel_coll: doc.collection,
+				version: doc.bus.version,
+				bus : doc.bus
+			};  
+			
+			emit([doc.bus.id, doc.bus.version, 4], value_bus);
+		}
+		
+		if (doc.ut)
+		{
+			var value_ut = {
+				_id: doc.ut.id,
+				rel_id: doc._id, 
+				rel_coll: doc.collection,
+				version: doc.ut.version,
+				ut : doc.ut
+			}; 
+
+			emit([doc.bus.id, doc.bus.version, 4], value_ut);			
+		}		
+	}	
 }

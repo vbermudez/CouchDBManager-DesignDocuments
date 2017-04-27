@@ -14,7 +14,7 @@ var Pillow = function() {
 
         match: function(item, pql) {
             var func_body = 'return ' + pql + ';';
-
+            
             return (new Function('item', 'Pillow', func_body)).call(this, item, Pillow);
         },
 
@@ -57,13 +57,15 @@ var Pillow = function() {
                 pql_related = pql_parts[1].trim();
             }
 
-            var pairs_re = /([\w.-]+(?:\s+|)(?:like|contains|[<>!=]{1,2})(?:\s+|)(?:[\d.]+|true|false|'(?:[^'\\]+(?:\\.[^'\\]+)*)'))/g;
+            var pairs_re = /([\w.-]+(?:\s+|)(?:like|contains|[<>!=]{1,2})(?:\s+|)(?:[\d.]+|true|false|null|'(?:[^'\\]+(?:\\.[^'\\]+)*)'))/g;
             var vars_re = /([\w.-]+)(?:\s*)(?:like|contains|[<>!=]{1,2})/g;
-            var values_re = /(?:like|contains|[<>!=]{1,2})(?:\s*)(?!'undefined')([\d.]+|true|false|'(?:[^'\\]+(?:\\.[^'\\]+)*)')/g;
+            var values_re = /(?:like|contains|[<>!=]{1,2})(?:\s*)(?!'undefined')([\d.]+|true|false|null|'(?:[^'\\]+(?:\\.[^'\\]+)*)')/g;
             var parsed_related = false;
             var parsed = pql_copy.replace(/([']|)\s(and)\s(\w*[^'])/gi, function(m, g1, i, s) {
+                // log('# AND repl:' + m);
                 return m.replace(/and/i, '&&');
             }).replace(/([']|)\s(or)\s(\w*[^'])/gi, function(m, g1, i, s) {
+                // log('# OR repl:' + m);
                 return m.replace(/or/i, '||');
             }).replace(pairs_re, function(m, g1, i, s) {
                 // log('# pairs: ' + m);
@@ -125,6 +127,8 @@ var Pillow = function() {
 
                 return '(' + tmp + ')';
             });
+
+            // log('# PARSED: ' + parsed);
 
             if (pql_related) {
                 parsed_related = Pillow.parse(pql_related).query;

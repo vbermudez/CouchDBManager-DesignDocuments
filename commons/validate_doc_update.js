@@ -31,6 +31,11 @@ function(newDoc, oldDoc, userCtx, secObj) {
         var current_usr = userCtx.name;
         
         if (!old_locked) return true;
+        if (current_usr !== old_locked_by || current_usr !== new_locked_by) {
+             if (!user_is('_admin') && !user_is('admins')) {
+                 return false;
+             }
+        }
         if (new_locked && new_locked_by === old_locked_by) return true;
         if (new_locked && old_locked_by === '') return true;
         if (new_locked && new_locked_by !== old_locked_by) return false;

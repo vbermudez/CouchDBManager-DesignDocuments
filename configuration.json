@@ -87,7 +87,8 @@
                 "organization",
                 "role",
                 "user",
-                "user_preferences"
+                "user_preferences",
+		"registered_project"
             ]
         }
     }

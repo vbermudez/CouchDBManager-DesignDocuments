@@ -52,7 +52,7 @@ function(newDoc, oldDoc, userCtx, secObj) {
         // throw({forbidden: 'Destination document is locked.'});
         throw({unauthorized: 'Destination document is locked.'});
     }
-
+/*
 	var del_collection = [
 		"updown_config",
 		"monit_config"
@@ -66,7 +66,7 @@ function(newDoc, oldDoc, userCtx, secObj) {
 		
 		return;
     }
-	
+*/	
 	/*
 	if (oldDoc[name]=="Commons CouchApp")
 	{
@@ -83,9 +83,10 @@ function(newDoc, oldDoc, userCtx, secObj) {
 		required('collection');
 		required('name');
 	}
-
+/*
     if (newDoc.collection == 'bus') {
         
     }
+*/
     // required('description');
 }

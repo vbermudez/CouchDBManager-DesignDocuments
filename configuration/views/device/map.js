@@ -217,6 +217,43 @@ function(doc) {
 			emit([doc.device.id, doc.device.version, 5], value_device);
 		
 		}
-	}  
+	}
 	
+	
+	if ("device_task" === doc.collection) {
+    
+		var value = {
+			_id: doc._id
+		};
+
+		emit([doc.device.id, doc.device.version, 106], value);
+
+		if (doc.task)
+		{
+			var value_task_device = {
+				_id: doc.task.id,
+				rel_id: doc._id, 
+				rel_coll: doc.collection,
+				version: doc.task.version,
+				task : doc.task
+			};  
+
+			emit([doc.device.id, doc.device.version, 6], value_task_device);
+
+		}
+
+		if (doc.device)
+		{
+			var value_device = {
+				_id: doc.device.id,
+				rel_id: doc._id, 
+				rel_coll: doc.collection,
+				version: doc.device.version,
+				device : doc.device
+			};
+
+			emit([doc.device.id, doc.device.version, 6], value_device);
+
+		}
+	}	
 }

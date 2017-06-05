@@ -1,5 +1,5 @@
 function(doc) {
-    if (doc.collection == "task_var") {
+    if (doc.collection == "task_localvar") {
         emit([doc._id, 0], { _id: doc._id, name: doc.name, description: doc.description });	
         
         if (doc.task != null) {

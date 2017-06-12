@@ -5,8 +5,7 @@ CouchDBManager Design Documents
 ## Tabla de contenidos
 - **[Gestión de bloqueos](#gestión-de-bloqueos)**
     - [Instalación](#instalación)
-- **Gestión de versiones extendida**
-- **Resolución de incidencias**
+- **Resolución de incidencias y mejoras**
 
 ## Novedades 2017
 
@@ -16,7 +15,7 @@ Ahora los documentos bloqueados en el servidor remoto no se actualizarán con la
 
 A continuación se detalla la instalación de la acutalización.
 
-_[Arriba](#tabla-de-contenidos)_
+_[Inicio](#tabla-de-contenidos)_
 
 #### Instalación
 
@@ -27,4 +26,4 @@ cd ./commons
 couchapp push http://<usuario>:<clave>@<nombre.o.ip>:5984/<base_de_datos>
 ```
 
-_[Arriba](#tabla-de-contenidos)_
+_[Inicio](#tabla-de-contenidos)_

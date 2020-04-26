@@ -1,6 +1,6 @@
 CouchDBManager Design Documents
 ===============================
-> CouchDB Design Documents companion for CouchDBManager API
+> CouchDB Design Documents companion for [CouchDBManager API](https://github.com/vbermudez/CouchDBManager)
 
 ## Tabla de contenidos
 - **[Gestión de bloqueos](#gestión-de-bloqueos)**
